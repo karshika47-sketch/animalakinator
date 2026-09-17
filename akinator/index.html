@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐾 Animal Akinator - The Mystical Mind Reader</title>
+  <meta name="description" content="Think of an animal and let the magical Animal Akinator guess it in 20 questions or fewer! Fun, interactive, and offline.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas for Celebration Confetti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Ambient Glowing Background Bubbles -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Top Navigation Bar -->
+    <header class="game-header">
+      <div class="brand">
+        <span class="brand-paw">🐾</span>
+        <h1 class="brand-title">ANIMAL AKINATOR</h1>
+      </div>
+      <div class="header-actions">
+        <button id="sound-btn" class="icon-btn" title="Toggle Sound (Mute/Unmute)" aria-label="Toggle Sound">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button id="help-btn" class="icon-btn" title="How to play" aria-label="Game Rules">
+          <span>❔</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="game-stage">
+
+      <!-- ================= SCREEN 1: WELCOME / START ================= -->
+      <section id="screen-start" class="game-screen active">
+        <div class="oracle-card">
+          <div class="oracle-avatar-wrapper">
+            <div class="oracle-avatar floating">
+              <span class="genie-emoji">🔮</span>
+              <div class="crystal-aura"></div>
+            </div>
+            <div class="animal-parade">
+              <span>🦁</span><span>🐬</span><span>🦅</span><span>🐼</span><span>🐢</span>
+            </div>
+          </div>
+
+          <h2 class="welcome-heading">Think of an animal.<br><span class="highlight-gradient">I'll read your mind!</span></h2>
+          <p class="welcome-subtitle">
+            Pick any animal in the kingdom — mammal, bird, reptile, fish, or bug. 
+            Answer my questions with <strong>YES</strong> or <strong>NO</strong>. I will guess it in <strong>20 questions or fewer</strong>!
+          </p>
+
+          <div class="feature-badges">
+            <div class="badge"><span class="badge-icon">⚡</span> 50+ Wild Animals</div>
+            <div class="badge"><span class="badge-icon">🎯</span> Smart AI Split</div>
+            <div class="badge"><span class="badge-icon">⏳</span> Max 20 Questions</div>
+          </div>
+
+          <button id="start-btn" class="cta-btn pulse-glow">
+            <span class="btn-text">Start The Game</span>
+            <span class="btn-icon">✨</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 2: PLAYING / QUESTIONS ================= -->
+      <section id="screen-play" class="game-screen hidden">
+        <!-- Progress Bar & Question Counter -->
+        <div class="progress-section">
+          <div class="progress-meta">
+            <span class="question-step" id="question-indicator">Question 1 / 20</span>
+            <span class="confidence-badge" id="confidence-indicator" title="Oracle's confidence level">
+              <span class="confidence-icon">🔮</span> Mind Power: <strong id="confidence-val">10%</strong>
+            </span>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="20" aria-valuenow="1" id="progress-bar-track">
+            <div class="progress-fill" id="progress-bar-fill"></div>
+            <div class="progress-glow-dot" id="progress-dot"></div>
+          </div>
+        </div>
+
+        <!-- Oracle Mascot & Status -->
+        <div class="mascot-status-container">
+          <div class="mini-oracle" id="mini-oracle">
+            <span id="oracle-face">🧙‍♂️</span>
+            <div class="oracle-thought-bubble" id="thought-bubble">
+              <span id="thought-text">Consulting the animal kingdom...</span>
+            </div>
+          </div>
+          <div class="remaining-tracker" id="remaining-count-badge" title="Remaining possible candidate animals">
+            <span class="pulse-dot"></span>
+            <span id="candidates-text">55 possibilities</span>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card" id="question-card">
+          <div class="card-glow-edge"></div>
+          <div class="question-number-pill" id="question-pill">QUESTION 1</div>
+          <h2 class="question-text" id="question-text">Does it live on land?</h2>
+        </div>
+
+        <!-- Yes / No Large Buttons -->
+        <div class="answer-buttons-grid">
+          <button id="btn-yes" class="answer-btn btn-yes" aria-label="Yes">
+            <span class="btn-emoji">👍</span>
+            <span class="btn-label">YES</span>
+            <span class="key-hint">[Y]</span>
+          </button>
+          <button id="btn-no" class="answer-btn btn-no" aria-label="No">
+            <span class="btn-emoji">👎</span>
+            <span class="btn-label">NO</span>
+            <span class="key-hint">[N]</span>
+          </button>
+        </div>
+
+        <!-- Secondary Controls: Undo & Restart -->
+        <div class="secondary-controls">
+          <button id="btn-undo" class="sub-action-btn" title="Go back to previous question" disabled>
+            <span>↩️</span> Undo Last Answer
+          </button>
+          <button id="btn-restart" class="sub-action-btn" title="Start over">
+            <span>🔄</span> Restart
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 3: FINAL GUESS / VICTORY ================= -->
+      <section id="screen-guess" class="game-screen hidden">
+        <div class="guess-card">
+          <div class="guess-header-badge">
+            <span>🎉</span>
+            <span>I THINK YOUR ANIMAL IS...</span>
+          </div>
+
+          <div class="revealed-animal-avatar-container">
+            <div class="revealed-avatar-glow"></div>
+            <div class="revealed-emoji" id="revealed-emoji">🦁</div>
+          </div>
+
+          <h2 class="revealed-name" id="revealed-name">LION</h2>
+          
+          <div class="guess-meta-row" id="revealed-tags">
+            <span class="meta-tag tag-habitat">🌍 Savannah</span>
+            <span class="meta-tag tag-diet">🥩 Carnivore</span>
+            <span class="meta-tag tag-class">🐾 Mammal</span>
+          </div>
+
+          <!-- Fun Animal Fact Card -->
+          <div class="fact-card">
+            <div class="fact-icon">💡</div>
+            <div class="fact-body">
+              <h3 class="fact-title">Did you know?</h3>
+              <p class="fact-text" id="revealed-fact">A lion's roar can be heard from up to 5 miles away!</p>
+            </div>
+          </div>
+
+          <div class="question-summary-pill" id="guess-summary-pill">
+            Guessed in <strong>8</strong> questions with <strong>98%</strong> certainty!
+          </div>
+
+          <!-- Decision Buttons -->
+          <div class="final-actions">
+            <button id="btn-play-again" class="cta-btn primary-guess-btn">
+              <span class="btn-text">🔄 Play Again</span>
+            </button>
+            <button id="btn-wrong-guess" class="ghost-btn secondary-guess-btn">
+              <span>❌ Wrong Guess</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 4: WRONG GUESS / DEFEAT ================= -->
+      <section id="screen-defeat" class="game-screen hidden">
+        <div class="oracle-card defeat-card">
+          <div class="defeat-icon">🤯</div>
+          <h2 class="defeat-title">You outsmarted me!</h2>
+          <p class="defeat-subtitle">
+            My ancient scrolls were tested! What animal were you actually thinking of?
+          </p>
+
+          <form id="learning-form" class="defeat-form" onsubmit="return false;">
+            <div class="input-group">
+              <label for="user-animal-input">Your Secret Animal:</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🐾</span>
+                <input 
+                  type="text" 
+                  id="user-animal-input" 
+                  placeholder="e.g., Platypus, Capybara, Red Panda..." 
+                  maxlength="40" 
+                  autocomplete="off"
+                  required
+                >
+              </div>
+            </div>
+            <button type="submit" id="btn-teach-oracle" class="cta-btn">
+              <span>📜 Teach the Oracle</span>
+            </button>
+          </form>
+
+          <div id="defeat-feedback" class="defeat-feedback hidden">
+            <span class="feedback-icon">✨</span>
+            <p id="defeat-feedback-text">Fascinating! I'll remember this for our next battle of minds.</p>
+          </div>
+
+          <div class="defeat-actions">
+            <button id="btn-restart-from-defeat" class="cta-btn sub-action-cta">
+              <span>🔄 Play Another Round</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>🐾 Animal Akinator &bull; 20 Questions Game &bull; 100% Offline</p>
+    </footer>
+  </div>
+
+  <!-- Help / Instructions Modal -->
+  <div id="help-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">📖 How to Play</h3>
+        <button id="modal-close-btn" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li><strong>1.</strong> Think of any animal from the animal kingdom.</li>
+          <li><strong>2.</strong> The Oracle will ask you up to <strong>20 questions</strong>.</li>
+          <li><strong>3.</strong> Answer truthfully with <strong>YES</strong> or <strong>NO</strong>.</li>
+          <li><strong>4.</strong> The Oracle will eliminate animals and try to guess your exact animal before reaching 20 questions!</li>
+          <li><strong>5.</strong> You can use keyboard shortcuts: <kbd>Y</kbd> for Yes, <kbd>N</kbd> for No, and <kbd>Z</kbd> to Undo.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-got-it-btn" class="cta-btn small-btn">Got It!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
